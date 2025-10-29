@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block title %}Comparador de Países{% endblock %}
+
+{% block content %}
+<h1 class="mb-4"><i class="bi bi-bar-chart-line-fill"></i> Comparador de Países</h1>
+
+<div class="card card-body mb-4 shadow-sm">
+    <form method="GET" action="{% url 'comparador:comparar' %}" class="row g-3 align-items-end">
+        
+        <div class="col-md-5">
+            <label for="pais1" class="form-label"><strong>País 1</strong></label>
+            <select class="form-select" id="pais1" name="pais1" required>
+                <option value="">Selecciona un país...</option>
+                {% for country in all_countries %}
+                    <option value="{{ country.cca3 }}" 
+                            {% if country.cca3 == selected_pais1 %}selected{% endif %}>
+                        {{ country.name.common }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-5">
+            <label for="pais2" class="form-label"><strong>País 2</strong></label>
+            <select class="form-select" id="pais2" name="pais2" required>
+                <option value="">Selecciona un país...</option>
+                {% for country in all_countries %}
+                    <option value="{{ country.cca3 }}"
+                            {% if country.cca3 == selected_pais2 %}selected{% endif %}>
+                        {{ country.name.common }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-arrow-right-left"></i> Comparar
+            </button>
+        </div>
+    </form>
+</div>
+
+{% if error %}
+    <div class="alert alert-danger">{{ error }}</div>
+{% endif %}
+
+{% if pais1_data and pais2_data %}
+<div class="row mt-4 g-4"> <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <img src="{{ pais1_data.flags.svg }}" class="card-img-top border-bottom" style="height: 300px; object-fit: cover;" alt="Bandera">
+            <div class="card-body d-flex flex-column"> <h2 class="card-title">{{ pais1_data.name.common }}</h2>
+                <h5 class="text-body-secondary">{{ pais1_data.name.official }}</h5>
+                <hr>
+                <ul class="list-group list-group-flush fs-6 flex-grow-1"> <li class="list-group-item">
+                        <strong><i class="bi bi-people-fill"></i> Población:</strong> 
+                        {{ pais1_data.population|floatformat:0 }}
+                    </li>
+                    <li class="list-group-item">
+                        <strong><i class="bi bi-building"></i> Capital:</strong> 
+                        {{ pais1_data.capital.0|default:'N/D' }}
+                    </li>
+                    <li class="list-group-item">
+                        <strong><i class="bi bi-globe2"></i> Continente:</strong> 
+                        {{ pais1_data.region }} ({{ pais1_data.subregion|default:'N/D' }})
+                    </li>
+                    <li class="list-group-item">
+                        <strong><i class="bi bi-translate"></i> Idiomas:</strong>
+                        {% for lang in pais1_data.languages.values %}
+                            {{ lang }}{% if not forloop.last %}, {% endif %}
+                        {% empty %}
+                            N/D
+                        {% endfor %}
+                    </li>
+                    <li class="list-group-item">
+                        <strong><i class="bi bi-cash-coin"></i> Monedas:</strong>
+                        {% for curr in pais1_data.currencies.values %}
+                            {{ curr.name }} ({{ curr.symbol }})
+                        {% empty %}
+                            N/D
+                        {% endfor %}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <img src="{{ pais2_data.flags.svg }}" class="card-img-top border-bottom" style="height: 300px; object-fit: cover;" alt="Bandera">
+            <div class="card-body d-flex flex-column"> <h2 class="card-title">{{ pais2_data.name.common }}</h2>
+                <h5 class="text-body-secondary">{{ pais2_data.name.official }}</h5>
+                <hr>
+                <ul class="list-group list-group-flush fs-6 flex-grow-1"> <li class="list-group-item">
+                        <strong><i class="bi bi-people-fill"></i> Población:</strong> 
+                        {{ pais2_data.population|floatformat:0 }}
+                    </li>
+                    <li class="list-group-item">
+                        <strong><i class="bi bi-building"></i> Capital:</strong> 
+                        {{ pais2_data.capital.0|default:'N/D' }}
+                    </li>
+                    <li class="list-group-item">
+                        <strong><i class="bi bi-globe2"></i> Continente:</strong> 
+                        {{ pais2_data.region }} ({{ pais2_data.subregion|default:'N/D' }})
+                    </li>
+                    <li class="list-group-item">
+                        <strong><i class="bi bi-translate"></i> Idiomas:</strong>
+                        {% for lang in pais2_data.languages.values %}
+                            {{ lang }}{% if not forloop.last %}, {% endif %}
+                        {% empty %}
+                            N/D
+                        {% endfor %}
+                    </li>
+                    <li class="list-group-item">
+                        <strong><i class="bi bi-cash-coin"></i> Monedas:</strong>
+                        {% for curr in pais2_data.currencies.values %}
+                            {{ curr.name }} ({{ curr.symbol }})
+                        {% empty %}
+                            N/D
+                        {% endfor %}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

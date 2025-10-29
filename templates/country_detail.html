@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ country.name.common|default:'Detalle del País' }}{% endblock %}
+
+{% block content %}
+
+{% if error %}
+<div class="alert alert-danger">{{ error }}</div>
+<a href="/paises/" class="btn btn-primary">Volver a la lista</a>
+
+{% elif country %}
+<div class="row bg-white p-4 rounded shadow-sm">
+    <div class="col-md-5">
+        <img src="{{ country.flags.svg }}" class="img-fluid rounded" alt="Bandera de {{ country.name.common }}">
+    </div>
+
+    <div class="col-md-7">
+        <h1 class="display-4">{{ country.name.common }}</h1>
+        <h3 class_="text-muted">{{ country.name.official }}</h3>
+
+        <hr>
+
+        <ul class="list-group list-group-flush fs-5">
+            <li class="list-group-item">
+                <strong>Continente:</strong> {{ country.region }} (Subregión: {{ country.subregion }})
+            </li>
+            <li class="list-group-item">
+                <strong>Capital:</strong> {{ country.capital.0|default:'N/D' }}
+            </li>
+            <li class="list-group-item">
+                <strong>Población:</strong> {{ country.population|floatformat:0 }} habitantes
+            </li>
+            <li class="list-group-item">
+                <strong>Idiomas:</strong>
+                {% for lang in country.languages.values %}
+                {{ lang }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </li>
+            <li class="list-group-item">
+                <strong>Monedas:</strong>
+                {% for curr in country.currencies.values %}
+                {{ curr.name }} ({{ curr.symbol }})
+                {% endfor %}
+            </li>
+        </ul>
+
+        <div class="mt-4">
+            <a href="{{ country.maps.googleMaps }}" target="_blank" class="btn btn-info">
+                Ver en Google Maps 🗺️
+            </a>
+            <a href="/paises/" class="btn btn-secondary">
+                Volver a la lista
+            </a>
+        </div>
+
+    </div>
+</div>
+
+{% else %}
+<div class="alert alert-warning">No se encontraron datos para este país.</div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Países{% endblock %}
+
+{% block content %}
+<h1 class="mb-4"><i class="bi bi-globe-americas"></i> Países del Mundo</h1>
+
+<div class="card card-body mb-4 shadow-sm">
+    <form method="GET" action="{% url 'country-list' %}" class="row g-3 align-items-end">
+
+        <div class="col-md-5">
+            <label for="q" class="form-label">Buscar por nombre:</label>
+            <input type="text" class="form-control" id="q" name="q" placeholder="Ej: Argentina"
+                value="{{ current_query }}">
+        </div>
+
+        <div class="col-md-5">
+            <label for="region" class="form-label">Filtrar por región:</label>
+            <select class="form-select" id="region" name="region">
+                <option value="" {% if not current_region %}selected{% endif %}>Todas las regiones</option>
+                <option value="Africa" {% if current_region == 'Africa' %}selected{% endif %}>África</option>
+                <option value="Americas" {% if current_region == 'Americas' %}selected{% endif %}>América</option>
+                <option value="Asia" {% if current_region == 'Asia' %}selected{% endif %}>Asia</option>
+                <option value="Europe" {% if current_region == 'Europe' %}selected{% endif %}>Europa</option>
+                <option value="Oceania" {% if current_region == 'Oceania' %}selected{% endif %}>Oceanía</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Buscar</button>
+        </div>
+
+    </form>
+</div>
+{% if error %}
+<div class="alert alert-danger">{{ error }}</div>
+<a href="{% url 'country-list' %}" class="btn btn-secondary">Limpiar filtros</a>
+
+{% elif not countries %}
+<div class="alert alert-warning">No se encontraron países que coincidan con tu búsqueda.</div>
+<a href="{% url 'country-list' %}" class="btn btn-secondary">Limpiar filtros</a>
+
+{% else %}
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for country in countries %}
+    <div class="col">
+        <a href="/pais/{{ country.cca3 }}/" class="text-decoration-none text-dark">
+            <div class="card h-100 shadow-sm">
+                <img src="{{ country.flags.png }}" class="card-img-top" alt="Bandera de {{ country.name.common }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ country.name.common }}</h5>
+                    <p class="card-text">
+                        <strong>Capital:</strong> {{ country.capital.0|default:'N/D' }} <br>
+                        <strong>Población:</strong> {{ country.population|floatformat:0 }}
+                    </p>
+                </div>
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% endblock %}
